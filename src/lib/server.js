@@ -1,13 +1,14 @@
 'use strict';
 
 import express from 'express';
-import mongoose, { mongo } from 'mongoose';
+import mongoose from 'mongoose';
 import logger from './logger';
 import carRouter from '../router/car-router';
 
+
 const app = express();
 const PORT = process.env.PORT || 3000;
-let server;
+let myServer;
 
 app.use(carRouter);
 
@@ -17,9 +18,9 @@ app.all('*', (req, res) => {
 });
 
 const startServer = () => {
-  return mongoose.connect(process.env.MONGOD_URI)
+  return mongoose.connect(process.env.MONGODB_URI)
     .then(() => {
-      server = app.listen(PORT, () => {
+      myServer = app.listen(PORT, () => {
         logger.log(logger.INFO, `SERVER is listening on PORT ${PORT}`);
       });
     })
@@ -31,7 +32,8 @@ const startServer = () => {
 const stopServer = () => {
   return mongoose.disconnect()
     .then(() => {
-      server.close(() => {
+      console.log(myServer, 'My Server');
+      myServer.close(() => {
         logger.log(logger.INFO, 'Server is off');
       });
     })
@@ -41,3 +43,4 @@ const stopServer = () => {
 };
 
 export { startServer, stopServer };
+
