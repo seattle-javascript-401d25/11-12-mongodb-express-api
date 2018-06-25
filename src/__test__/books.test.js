@@ -98,6 +98,23 @@ describe('POST requests to /api/v1/books', () => {
 });
 
 describe('GET requests to /api/v1/books', () => {
+  test('200 GET for fetching all books', () => {
+    let mockBookForGet;
+    return createBookMockPromise()
+      .then((book) => {
+        mockBookForGet = book;
+        return superagent.get(apiUrl);
+      })
+      .then((response) => {
+        expect(response.status).toEqual(200);
+        expect(response.body).toHaveLength(1);
+        expect(response.body[0].author).toEqual(mockBookForGet.author);
+      })
+      .catch((err) => {
+        throw err;
+      });
+  });
+
   test('200 GET for succesful fetching of a book', () => {
     let mockBookForGet;
     return createBookMockPromise()

@@ -32,7 +32,7 @@ bookRouter.post('/api/v1/books', jsonParser, (request, response) => {
     })
     .then((newBook) => {
       logger.log(logger.INFO, `BOOK-ROUTER POST:  a new book was saved: ${JSON.stringify(newBook)}`);
-      return response.json(newBook);
+      return response.json(newBook).status(200);
     })
     .catch((err) => {
       // we will hit here if we have some misc. mongodb error or parsing id error
@@ -47,26 +47,35 @@ bookRouter.get('/api/v1/books/:id?', (request, response) => {
 
   // TODO:
   // if (!request.params.id) do logic here to return an array of all resources, else do the logic below
-
+  if (!request.params.id) {
+    return Book.find()
+      .then((books) => {
+        return response.json(books).status(200);
+      })
+      .catch((err) => {
+        return mongoDbErrResponse(err, request, response, 'BOOK-ROUTER');
+      });
+  }
   return Book.findOne({ _id: request.params.id })
-    .then((note) => {
-      if (!note) {
-        logger.log(logger.INFO, 'BOOK-ROUTER GET /api/v1/books/:id: responding with 404 status code for no note found');
+    .then((book) => {
+      if (!book) {
+        logger.log(logger.INFO, 'BOOK-ROUTER GET /api/v1/books/:id: responding with 404 status code for no book found');
         return response.sendStatus(404);
       }
       logger.log(logger.INFO, 'BOOK-ROUTER GET /api/v1/books/:id: responding with 200 status code for successful get');
-      return response.json(note);
+      return response.json(book);
     })
     .catch((err) => {
       // we will hit here if we have a mongodb error or parsing id error
-      if (err.message.toLowerCase().includes('cast to objectid failed')) {
-        logger.log(logger.ERROR, `BOOK-ROUTER PUT: responding with 404 status code to mongdb error, objectId ${request.params.id} failed`);
-        return response.sendStatus(404);
-      }
+      return mongoDbErrResponse(err, request, response, 'BOOK-ROUTER');
+      // if (err.message.toLowerCase().includes('cast to objectid failed')) {
+      //   logger.log(logger.ERROR, `BOOK-ROUTER PUT: responding with 404 status code to mongdb error, objectId ${request.params.id} failed`);
+      //   return response.sendStatus(404);
+      // }
 
-      // if we hit here, something else not accounted for occurred
-      logger.log(logger.ERROR, `BOOK-ROUTER GET: 500 status code for unaccounted error ${JSON.stringify(err)}`);
-      return response.sendStatus(500);
+      // // if we hit here, something else not accounted for occurred
+      // logger.log(logger.ERROR, `BOOK-ROUTER GET: 500 status code for unaccounted error ${JSON.stringify(err)}`);
+      // return response.sendStatus(500);
     });
 });
 

@@ -41,12 +41,12 @@ In the model/ directory create a Model for a resource using Mongoose (that is di
 
 #### Server Endpoints
 Create the following routes for performing CRUD opperations on your resource. The [Mongoose docs](http://mongoosejs.com/docs/api.html#Model) will be your best friend in researching the correct methods you need to use to properly create, read, update, and destroy a resource in the Mongo database. 
-* `POST /api/<resource-name>`
+* DONE: `POST /api/<resource-name>`
   * pass data as stringifed JSON in the body of a **POST** request to create a new resource
   * on success respond with a 200 status code and the created note
   * on failure due to a bad request, send a 400 status code
   * on failure due to a duplicate request, send a 409 status code
-* `GET /api/<resource-name>` and `GET /api/<resource-name>/:id`
+* DONE `GET /api/<resource-name>` and `GET /api/<resource-name>/:id`
   * with no id in the query string it should respond with an array of all of your resources
   * with an id in the query string it should respond with the details of a specifc resource (as JSON)
   * on failure if the id is not found, respond with a 404
