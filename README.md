@@ -6,6 +6,7 @@
 * Work in a fork of this repository
 * Work in a branch on your fork called `lab-11`
 * Set up Travis CI to your forked repo
+* **A deployed Heroku URL is not due until Lab 12, but you should start working on deployment for this lab now** 
 * Create a pull request from your lab branch branch to your `master` branch
 * Open a pull request to this repository
 * Submit on canvas a question and observation,your original estimate, how long you spent, and a link to your pull request
@@ -62,4 +63,4 @@ Create the following routes for performing CRUD opperations on your resource. Th
 * `POST`: test 200, it should respond with the body content for a post request with a valid body
 
 ## Documentation
-In the README.md write documention for starting your server and how to make requests to each endpoint it provides. The documentaion should describe how the server would respond to valid and invalid requests.
+Add your Travis badge to the top of your README. List all of your registered routes and describe their behavior. Describe what your resouce is. Imagine you are providing this API to other developers who need to research your API in order to use it. Describe how a developer should be able to make requests to your API. Refer to the [PokeAPI docs](https://pokeapi.co/docsv2/#resource-lists) for a good example to follow. 
