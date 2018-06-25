@@ -165,3 +165,41 @@ describe('PUT request to /api/v1/books', () => {
       });
   });
 });
+
+describe('DELETE requests to /api/v1/books', () => {
+  test('204 DELETE for succesful deletion of a book', () => {
+    let mockBookForGet;
+    return createBookMockPromise()
+      .then((book) => {
+        mockBookForGet = book;
+        // I can return this to the next then block because superagent requests are also promisfied
+        return superagent.delete(`${apiUrl}/${mockBookForGet._id}`);
+      })
+      .then((response) => {
+        expect(response.status).toEqual(204);
+      })
+      .catch((err) => {
+        throw err;
+      });
+  });
+
+  test('400 DELETE: missing book id', () => {
+    return superagent.delete(apiUrl)
+      .then((response) => {
+        throw response;
+      })
+      .catch((err) => {
+        expect(err.status).toEqual(400);
+      });
+  });
+
+  test('404 DELETE: no book with this id', () => {
+    return superagent.delete(`${apiUrl}/THISISABADID`)
+      .then((response) => {
+        throw response;
+      })
+      .catch((err) => {
+        expect(err.status).toEqual(404);
+      });
+  });
+});

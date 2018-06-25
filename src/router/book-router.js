@@ -106,4 +106,21 @@ bookRouter.put('/api/v1/books/:id?', jsonParser, (request, response) => {
   return undefined;
 });
 
+bookRouter.delete('/api/v1/books/:id?', (request, response) => {
+  if (!request.params.id) {
+    logger.log(logger.INFO, 'BOOK-ROUTER DELETE /api/v1/books: DELETE request missing book id. Status 400 returned.');
+    return response.sendStatus(400);
+  }
+
+  Book.findByIdAndRemove(request.params.id)
+    .then((result) => {
+      response.sendStatus((result ? 204 : 404));
+    })
+    .catch((err) => {
+      throw err;
+    });
+
+  return undefined;
+});
+
 export default bookRouter;

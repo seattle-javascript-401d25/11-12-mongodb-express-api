@@ -50,7 +50,7 @@ Create the following routes for performing CRUD opperations on your resource. Th
   * with no id in the query string it should respond with an array of all of your resources
   * with an id in the query string it should respond with the details of a specifc resource (as JSON)
   * on failure if the id is not found, respond with a 404
-* `DELETE /api/<resource-name>/:id`
+* DONE `DELETE /api/<resource-name>/:id`
   * the route should delete a resource with the given id
   * on success this should return a 204 status code with no content in the body
   * on failure due to lack of id in the query, respond with a 400 status code
