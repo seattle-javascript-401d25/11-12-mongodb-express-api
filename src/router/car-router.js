@@ -28,7 +28,7 @@ carRouter.post('/api/cars/', jsonParser, (req, res) => {
         logger.log(logger.ERROR, `Car Router PUT: responding with 400 status code bad req  ${err.message}`);
         return res.sendStatus(400);  
       }
-      if (err.message.toLowerCase().includes('cast to objected failed')) {
+      if (err.message.toLowerCase().includes('cast to objectid failed')) {
         logger.log(logger.ERROR, `Car Router PUT: responding with 404 status code to mongdb error, objectId ${req.params.id} failed, ${err.message}`);
         return res.sendStatus(404);  
       }
@@ -112,7 +112,7 @@ carRouter.delete('/api/cars/:id?', (req, res) => {
       res.sendStatus((result ? 204 : 404));
     })
     .catch((err) => {
-      if (err.message.toLowerCase().includes('cast to objected failed')) {
+      if (err.message.toLowerCase().includes('cast to objectid failed')) {
         logger.log(logger.ERROR, `Car Router DELETE: responding with 404 status code to mongdb error, objectId ${req.params.id} failed, ${err.message}`);
         return res.sendStatus(404);  
       }
