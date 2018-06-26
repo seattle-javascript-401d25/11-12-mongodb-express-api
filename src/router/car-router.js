@@ -25,7 +25,7 @@ carRouter.post('/api/cars/', jsonParser, (req, res) => {
     })
     .catch((err) => {
       if (err.message.toLowerCase().includes('validation failed')) {
-        logger.log(logger.ERROR, `Car Router PUT: responding with 400 status code bad request  ${err.message}`);
+        logger.log(logger.ERROR, `Car Router PUT: responding with 400 status code bad req  ${err.message}`);
         return res.sendStatus(400);  
       }
       if (err.message.toLowerCase().includes('cast to objected failed')) {
@@ -98,6 +98,36 @@ carRouter.put('/api/cars/:id?', jsonParser, (req, res) => {
       logger.log(logger.ERROR, `Car Router GET: 500 status code for unaccounted error ${JSON.stringify(err)}`);
       return res.sendStatus(500);
     });
+  return undefined;
+});
+
+carRouter.delete('/api/cars/:id?', (req, res) => {
+  if (!req.params.id) {
+    logger.log(logger.INFO, 'Car DELETE /api/cars: DELETE req missing car id.');
+    return res.sendStatus(400);
+  }
+
+  Car.findByIdAndRemove(req.params.id)
+    .then((result) => {
+      res.sendStatus((result ? 204 : 404));
+    })
+    .catch((err) => {
+      if (err.message.toLowerCase().includes('cast to objected failed')) {
+        logger.log(logger.ERROR, `Car Router DELETE: responding with 404 status code to mongdb error, objectId ${req.params.id} failed, ${err.message}`);
+        return res.sendStatus(404);  
+      }
+      if (err.message.toLowerCase().includes('validation failed')) {
+        logger.log(logger.ERROR, `Car Router DELETE: responding with 400 status code bad request  ${err.message}`);
+        return res.sendStatus(400);  
+      }
+      if (err.message.toLowerCase().includes('duplicate key')) {
+        logger.log(logger.ERROR, `Car Router DELETE: responding with 409 status code duplicate key  ${err.message}`);
+        return res.sendStatus(409);  
+      }
+      logger.log(logger.ERROR, `Car Router GET: 500 status code for unaccounted error ${JSON.stringify(err)}`);
+      return res.sendStatus(500);
+    });
+
   return undefined;
 });
 

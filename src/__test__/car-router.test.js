@@ -82,6 +82,7 @@ describe('GET req to /api/cars', () => {
     let mockCarforGET;
     return pCreateCarMock()
       .then((car) => {
+        console.log(pCreateCarMock);
         mockCarforGET = car;
         return superagent.get(`${apiUrl}/${mockCarforGET._id}`);
       })
@@ -124,6 +125,43 @@ describe('PUT request to /api/cars', () => {
       })
       .catch((err) => {
         throw err;
+      });
+  });
+});
+
+describe('DELETE requests to /api/cars/', () => {
+  test('204 DELETE for successful deletion of a car', () => {
+    let mockCarforGET;
+    return pCreateCarMock()
+      .then((car) => {
+        mockCarforGET = car;
+        return superagent.delete(`${apiUrl}/${mockCarforGET._id}`);
+      })
+      .then((res) => {
+        expect(res.status).toEqual(204);
+      })
+      .catch((err) => {
+        throw err;
+      });
+  });
+
+  test('400 DELETE: missing car id', () => {
+    return superagent.delete(`${apiUrl}`)
+      .then((res) => {
+        throw res;
+      })
+      .catch((err) => {
+        expect(err.status).toEqual(400);
+      });
+  });
+
+  test('404 DELETE: no car with this id', () => {
+    return superagent.delete(`${apiUrl}/notgonnawork`)
+      .then((res) => {
+        throw res;
+      })
+      .catch((err) => {
+        expect(err.status).toEqual(404);
       });
   });
 });
