@@ -120,9 +120,7 @@ bookRouter.put('/api/v1/books/:id?', jsonParser, (request, response) => {
         logger.log(logger.INFO, `BOOK-ROUTER PUT - responding with a 200 status code for successful updated book: ${JSON.stringify(updatedBook)}`);
         return response.json(updatedBook);
       }
-      // updatedBook === null --> schema unique restriction violoated
-      logger.log(logger.ERROR, 'BOOK-ROUTER PUT - responding with 409 due to schema unique requirements violation');
-      return response.sendStatus(409);
+      return undefined;
     })
     .catch((err) => {
       // we will hit here if we have some misc. mongodb error or parsing id error
