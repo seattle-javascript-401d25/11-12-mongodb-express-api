@@ -1,8 +1,7 @@
 ![cf](https://i.imgur.com/7v5ASc8.png) 11: Single Resource Express API
 ======
 
-
-[![Build Status](https://travis-ci.org/TCW417/08-09-http-routing-rest.svg?branch=master)](https://travis-ci.org/TCW417/08-09-http-routing-rest)
+[![Build Status](https://travis-ci.org/TCW417/11-12-mongodb-express-api.svg?branch=master)](https://travis-ci.org/TCW417/11-12-mongodb-express-api)
 
 The BOOKS api provides an interface to a database of books. Think of it as your personal reading list.  Books have, at a minimum, title and author properties, with an optional description.
 
