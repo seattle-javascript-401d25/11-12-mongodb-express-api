@@ -69,11 +69,11 @@ Create the following routes for performing CRUD opperations on your resource. Th
 ## Bonus (up to 3 points)
 * `PUT /api/<resource-name>/:id`
   * the route should update a resource with the given id
-  * on success this should return a 200 status code with the newly updated body
-  * on failure due to lack of id in the query, respond with a 400 status code
-  * on failure due to passing in a property that does not exist on the schema or passing an empty body, respond with a 400 status code
-  * on failure due to the id and resource not existing, respond with a 404 status code
-  * on failure due to a duplicate request, send a 409 status code
+  * DONE on success this should return a 200 status code with the newly updated body
+  * DONE on failure due to lack of id in the query, respond with a 400 status code
+  * DONE on failure due to passing in a property that does not exist on the schema or passing an empty body, respond with a 400 status code
+  * DONE on failure due to the id and resource not existing, respond with a 404 status code
+  * DONE on failure due to a duplicate request, send a 409 status code
 * Test your PUT route for a 409 status code, a 404 status code, and for the two different conditions listed above to get the 400 status codes (*no points offered for testing for successul 200 put request because that was already given in lecture code*)
 
 

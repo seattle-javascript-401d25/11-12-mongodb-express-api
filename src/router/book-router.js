@@ -81,7 +81,26 @@ bookRouter.get('/api/v1/books/:id?', (request, response) => {
 
 bookRouter.put('/api/v1/books/:id?', jsonParser, (request, response) => {
   if (!request.params.id) {
-    logger.log(logger.INFO, 'BOOK-ROUTER PUT /api/v1/books: Responding with a 400 error code for no id passed in');
+    logger.log(logger.ERROR, 'BOOK-ROUTER PUT /api/v1/books: Responding with a 400 error code for no id passed in');
+    return response.sendStatus(400);
+  }
+  
+  if (Object.keys(request.body).length === 0) { // empty body
+    logger.log(logger.ERROR, 'BOOK-ROUTER PUT /api/v1/books: Responsding with a 400 status for no body sent');
+    return response.sendStatus(400);
+  }
+
+  const schemaKeys = Object.keys(Book.schema.paths);
+  const requestKeys = Object.keys(request.body);
+  let badBodyKeys = false;
+  for (let i = 0; i < requestKeys.length; i += 1) {
+    if (!schemaKeys.includes(requestKeys[i])) {
+      badBodyKeys = true;
+      break;
+    }
+  }
+  if (badBodyKeys) {
+    logger.log(logger.ERROR, 'BOOK-ROUTER PUT /api/v1/books: Responsding with a 400 status for invalid keys on body.');
     return response.sendStatus(400);
   }
 
@@ -91,13 +110,19 @@ bookRouter.put('/api/v1/books/:id?', jsonParser, (request, response) => {
     runValidators: true,
   };
 
+
   Book.init()
     .then(() => {
       return Book.findByIdAndUpdate(request.params.id, request.body, options);
     })
     .then((updatedBook) => {
-      logger.log(logger.INFO, `BOOK-ROUTER PUT - responding with a 200 status code for successful updated book: ${JSON.stringify(updatedBook)}`);
-      return response.json(updatedBook);
+      if (updatedBook) {
+        logger.log(logger.INFO, `BOOK-ROUTER PUT - responding with a 200 status code for successful updated book: ${JSON.stringify(updatedBook)}`);
+        return response.json(updatedBook);
+      }
+      // updatedBook === null --> schema unique restriction violoated
+      logger.log(logger.ERROR, 'BOOK-ROUTER PUT - responding with 409 due to schema unique requirements violation');
+      return response.sendStatus(409);
     })
     .catch((err) => {
       // we will hit here if we have some misc. mongodb error or parsing id error

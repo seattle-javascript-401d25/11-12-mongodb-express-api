@@ -14,7 +14,10 @@ const createBookMockPromise = () => {
     title: faker.lorem.words(3),
     author: faker.name.findName(),
     description: faker.lorem.words(20),
-  }).save();
+  }).save()
+    .catch((err) => {
+      throw err;
+    });
   // .save is a built-in method from mongoose to save/post 
   // a new resource to our actual Mongo database and it returns a promise
 };
@@ -28,7 +31,7 @@ afterAll(stopServer);
 afterEach(() => Book.remove({}));
 
 describe('POST requests to /api/v1/books', () => {
-  test('POST 200 for successful creation of book', () => {
+  test('200 POST for successful creation of book', () => {
     const mockBookToPost = {
       title: faker.lorem.words(3),
       author: faker.name.findName(),
@@ -49,7 +52,7 @@ describe('POST requests to /api/v1/books', () => {
       });
   });
 
-  test('POST 400 for not sending in a required TITLE property', () => {
+  test('400 POST for not sending in a required TITLE property', () => {
     const mockBookToPost = {
       author: faker.name.findName(),
       description: faker.lorem.words(50),
@@ -64,7 +67,7 @@ describe('POST requests to /api/v1/books', () => {
       });
   });
 
-  test('POST 400 for not sending in a required AUTHOR property', () => {
+  test('400 POST for not sending in a required AUTHOR property', () => {
     const mockBookToPost = {
       title: faker.lorem.words(3),
       description: faker.lorem.words(50),
@@ -79,7 +82,7 @@ describe('POST requests to /api/v1/books', () => {
       });
   });
 
-  test('POST 409 for duplicate key', () => {
+  test('409 POST for duplicate key', () => {
     return createBookMockPromise()
       .then((newBook) => {
         return superagent.post(apiUrl)
@@ -162,6 +165,85 @@ describe('PUT request to /api/v1/books', () => {
       })
       .catch((err) => {
         throw err;
+      });
+  });
+
+  test('400 PUT no id provided', () => {
+    return superagent.put(apiUrl)
+      .then((result) => {
+        throw result; // shouldn't get here
+      })
+      .catch((err) => {
+        expect(err.status).toEqual(400);
+      });
+  });
+
+  test('400 PUT for passing empty body', () => {
+    return createBookMockPromise()
+      .then((newBook) => {
+        return superagent.put(`${apiUrl}/${newBook._id}`)
+          .then((response) => {
+            throw response;
+          })
+          .catch((err) => {
+            expect(err.status).toEqual(400);
+          });
+      })
+      .catch((err) => {
+        throw err;
+      });
+  });
+
+  test('400 PUT request for adding properties outside schema', () => {
+    return createBookMockPromise()
+      .then((newBook) => {
+        return superagent.put(`${apiUrl}/${newBook._id}`)
+          .send({ title: 'updated title', newProperty: 'this property not in schema!' })
+          .then((response) => {
+            throw response;
+          })
+          .catch((err) => {
+            expect(err.status).toEqual(400);
+          });
+      })
+      .catch((err) => {
+        throw err;
+      });
+  });
+
+  test('404 PUT: no book with this id', () => {
+    return superagent.get(`${apiUrl}/THISISABADID`)
+      .then((response) => {
+        throw response;
+      })
+      .catch((err) => {
+        expect(err.status).toEqual(404);
+      });
+  });
+
+  test('409 PUT: duplicate book title on update', () => {
+    let book1;
+    let book2;
+    return createBookMockPromise()
+      .then((book) => {
+        book1 = book;
+        createBookMockPromise()
+          .then((nextBook) => {
+            book2 = nextBook;
+          })
+          .then(() => {
+            return superagent.put(`${apiUrl}/${book1._id}`)
+              .send({ title: book2.title, description: 'duplicate title!' })
+              .then((result) => {
+                throw result;
+              })
+              .catch((err) => {
+                expect(err.status).toEqual(409);
+              });
+          })
+          .catch((err) => {
+            throw err;
+          });
       });
   });
 });
