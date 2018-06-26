@@ -6,7 +6,7 @@ import Car from '../model/car';
 import logger from '../lib/logger';
 
 const jsonParser = bodyParser.json();
-const carRouter = new Router();
+const carRouter = new Router(); 
 
 carRouter.post('/api/cars/', jsonParser, (req, res, next) => {
   logger.log(logger.INFO, 'Car Router POST to api/cars is processing req');
