@@ -4,13 +4,16 @@ import express from 'express';
 import mongoose from 'mongoose';
 import logger from './logger';
 import carRouter from '../router/car-router';
-
+import loggerMiddleware from '../lib/middleware/logger-middleware';
+import errorMiddleware from '../lib/middleware/error-middleware';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 let myServer;
 
+app.use(loggerMiddleware);
 app.use(carRouter);
+app.use(errorMiddleware);
 
 app.all('*', (req, res) => {
   logger.log(logger.INFO, ' SERVER: returning a 404 from the catch all route');

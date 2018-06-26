@@ -2,4 +2,7 @@
 
 import logger from '../logger';
 
-export
+export default (req, res, next) => {
+  logger.log(logger.INFO, `Processing a ${req.method} on ${req.url} from logger middleware`);
+  return next();
+};
