@@ -32,7 +32,6 @@ const startServer = () => {
 const stopServer = () => {
   return mongoose.disconnect()
     .then(() => {
-      console.log(myServer, 'My Server');
       myServer.close(() => {
         logger.log(logger.INFO, 'Server is off');
       });

@@ -26,8 +26,8 @@ describe('POST req to /api/cars', () => {
     const CarMockPost = {
       make: faker.lorem.words(1),
       model: faker.lorem.words(1),
-      trim: faker.lorem.words(1),
-      addOns: faker.lorem.words(6),
+      // trim: faker.lorem.words(1),
+      // addOns: faker.lorem.words(6),
     };
     return superagent.post(apiUrl)
       .send(CarMockPost)
@@ -35,8 +35,8 @@ describe('POST req to /api/cars', () => {
         expect(response.status).toEqual(200);
         expect(response.body.make).toEqual(CarMockPost.make);
         expect(response.body.model).toEqual(CarMockPost.model);
-        expect(response._id).toBeTruthy();
-        expect(response.createdOn).toBeTruthy();            
+        expect(response.body._id).toBeTruthy();
+        expect(response.body.createdOn).toBeTruthy();            
       })
       .catch((err) => {
         throw err;
@@ -87,8 +87,8 @@ describe('GET req to /api/cars', () => {
       })
       .then((response) => {
         expect(response.status).toEqual(200);
-        expect(response.body.title).toEqual(mockCarforGET.make);
-        expect(response.content).toEqual(mockCarforGET.model);
+        expect(response.body.make).toEqual(mockCarforGET.make);
+        expect(response.body.model).toEqual(mockCarforGET.model);
       })
       .catch((err) => {
         throw err;
