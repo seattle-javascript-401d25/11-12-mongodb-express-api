@@ -3,18 +3,14 @@
 import mongoose from 'mongoose';
 
 const turkeySchema = mongoose.Schema({
-  title: {
+  species: {
     type: String,
     required: true,
     unique: true,
   },
-  content: {
+  location: {
     type: String,
-    minlength: 10,
-  },
-  createdOn: {
-    type: Date,
-    default: () => new Date(),
+    minlength: 5,
   },
 });
 

@@ -11,8 +11,8 @@ const apiUrl = `http://localhost:${process.env.PORT}/api/turkey`;
 
 const createTurkeyMockPromise = () => {
   return new Turkey({
-    title: faker.lorem.words(3),
-    content: faker.lorem.words(20),
+    species: faker.lorem.words(3),
+    location: faker.lorem.words(5),
   }).save();
   // .save is a built-in method from mongoose to save/post 
   // a new resource to our actual Mongo database and it returns a promise
@@ -46,7 +46,7 @@ describe('POST requests to /api/turkey', () => {
       });
   });
 
-  test('POST 400 for not sending in a required TITLE property', () => {
+  test('POST 400 for not sending in a required SPECIES property', () => {
     const mockTurkeyToPost = {
       content: faker.lorem.words(50),
     };
@@ -98,7 +98,7 @@ describe('GET requests to /api/turkey', () => {
   });
 
   test('404 GET: no turkey with this id', () => {
-    return superagent.get(`${apiUrl}/THISISABADID`)
+    return superagent.get(`${apiUrl}/Id doesn't work`)
       .then((response) => {
         throw response;
       })
@@ -127,5 +127,41 @@ describe('PUT request to /api/turkey', () => {
       .catch((err) => {
         throw err;
       });
+  });
+});
+
+describe('DELTET requests to /api/turkey/', () => {
+  test('204 DELETE for succuessful deletion of a turkey', () => {
+    let mockTurkeyForGet;
+    reutrnpCreateTurkeyMock()
+    .then ((turkey) => {
+      mockTurkeyForGet = turkey;
+      return superagent.delete(`${apiURL}/${mockTurkeyforGET._id}`);
+    })
+    then((response) => {
+      expect(response.status).toEqual(204);
+    })
+    .catch((err) => {
+      throw err;
+    });
+  });
+
+  test('400 DELETE: Missing turkey id', () => {
+    return superagent.delete(`${apiUrl}`)
+    .then((response) => {
+      throw response;
+    })
+    .catchcatch((err) => {
+      expect(err.status).toEqual(400);
+    });
+  });
+  test('404 DELETE: No turkey with this id', () => {
+    return superagent.delete(`${apiUrl}/Id doesnt work`)
+    .then((response) => {
+      throw response;
+    })
+    .catch((err) => {
+      expect(err.status).toEqual(404);
+    });
   });
 });

@@ -16,10 +16,10 @@ import logger from '../lib/logger';
 const jsonParser = bodyParser.json();
 const turkeyRouter = new Router();
 
-turkeyRouter.post('/api/turkey', jsonParser, (request, response) => {
+turkeyRouter.post('/api/turkey/', jsonParser, (request, response) => {
   logger.log(logger.INFO, 'TURKEY-ROUTER POST to /api/turkey - processing a request');
-  if (!request.body.title) {
-    logger.log(logger.INFO, 'TURKEY-ROUTER POST /api/turkey: Responding with 400 error for no title');
+  if (!request.body.species) {
+    logger.log(logger.INFO, 'TURKEY-ROUTER POST /api/turkey: Responding with 400 error for no species');
     return response.sendStatus(400);
   }
 
@@ -39,12 +39,12 @@ turkeyRouter.post('/api/turkey', jsonParser, (request, response) => {
         return response.sendStatus(404);
       }
 
-      // a required property was not included, i.e. in this case, "title"
+      // a required property was not included, i.e. in this case, "type"
       if (err.message.toLowerCase().includes('validation failed')) {
         logger.log(logger.ERROR, `TURKEY-ROUTER PUT: responding with 400 status code for bad request ${err.message}`);
         return response.sendStatus(400);
       }
-      // we passed in a title that already exists on a resource in the db because in our Turkey model, we set title to be "unique"
+      // we passed in a species that already exists on a resource in the db because in our Turkey model, we set species to be "unique"
       if (err.message.toLowerCase().includes('duplicate key')) {
         logger.log(logger.ERROR, `TURKEY-ROUTER PUT: responding with 409 status code for dup key ${err.message}`);
         return response.sendStatus(409);
@@ -113,12 +113,12 @@ turkeyRouter.put('/api/turkey/:id?', jsonParser, (request, response) => {
         return response.sendStatus(404);
       }
 
-      // a required property was not included, i.e. in this case, "title"
+      // a required property was not included, i.e. in this case, "type"
       if (err.message.toLowerCase().includes('validation failed')) {
         logger.log(logger.ERROR, `TURKEY-ROUTER PUT: responding with 400 status code for bad request ${err.message}`);
         return response.sendStatus(400);
       }
-      // we passed in a title that already exists on a resource in the db because in our Turkey model, we set title to be "unique"
+      // we passed in a species that already exists on a resource in the db because in our Turkey model, we set species to be "unique"
       if (err.message.toLowerCase().includes('duplicate key')) {
         logger.log(logger.ERROR, `TURKEY-ROUTER PUT: responding with 409 status code for dup key ${err.message}`);
         return response.sendStatus(409);
@@ -130,5 +130,23 @@ turkeyRouter.put('/api/turkey/:id?', jsonParser, (request, response) => {
     });
   return undefined;
 });
+
+turkey.findByIdAndRemove(req.params.id)
+.then((result) => {
+  response.sendStatus(204);
+})
+.catch((err) => {
+  if (err.message.toLowerCase().includes('cast to objectid failed')) {
+    logger.log(logger.ERROR, `Turkey Router DELETE: responding with 400 status code bad request ${err.message}`);
+    return request.sendStatus(400);
+  } 
+  if (err.message.toLowerCase().includes('validation failed')) {
+    logger.log(logger.ERROR, `Turkey Router DELETE: responding with 409 status code duplicate key ${err.message}`);
+    return response.sendStatus(409);
+  }
+  logger.log(logger.ERROR, `Turkey Router GET: 500 status code for unaccounted error ${JSON.stringify(err)}`);
+  return resizeBy.sendStatus(500);
+});
+return undefined;
 
 export default turkeyRouter;
