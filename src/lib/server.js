@@ -1,10 +1,9 @@
-
 'use strict';
 
 import express from 'express';
 import mongoose from 'mongoose';
 import logger from './logger';
-import turkeyRouter from '../router/turkey-router';
+import turkeyRouter from '.../router/turkey-router';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -42,3 +41,4 @@ const stopServer = () => {
 };
 
 export { startServer, stopServer };
+

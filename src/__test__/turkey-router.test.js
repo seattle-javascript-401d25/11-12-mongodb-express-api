@@ -7,15 +7,12 @@ import { startServer, stopServer } from '../lib/server';
 
 const apiUrl = `http://localhost:${process.env.PORT}/api/turkey`;
 
-// this will be a helper function mock out resources to create test items that will actually be in the Mongo database
 
-const createTurkeyMockPromise = () => {
+const createTurkeyMock = () => {
   return new Turkey({
     species: faker.lorem.words(3),
     location: faker.lorem.words(5),
   }).save();
-  // .save is a built-in method from mongoose to save/post 
-  // a new resource to our actual Mongo database and it returns a promise
 };
 
 beforeAll(startServer);
@@ -29,15 +26,15 @@ afterEach(() => Turkey.remove({}));
 describe('POST requests to /api/turkey', () => {
   test('POST 200 for successful creation of turkey', () => {
     const mockTurkeyToPost = {
-      title: faker.lorem.words(3),
-      content: faker.lorem.words(20),
+      species: faker.lorem.words(3),
+      location: faker.lorem.words(20),
     };
     return superagent.post(apiUrl)
       .send(mockTurkeyToPost)
       .then((response) => {
         expect(response.status).toEqual(200);
-        expect(response.body.title).toEqual(mockTurkeyToPost.title);
-        expect(response.body.content).toEqual(mockTurkeyToPost.content);
+        expect(response.body.species).toEqual(mockTurkeyToPost.species);
+        expect(response.body.location).toEqual(mockTurkeyToPost.location);
         expect(response.body._id).toBeTruthy();
         expect(response.body.createdOn).toBeTruthy();
       })
@@ -48,7 +45,8 @@ describe('POST requests to /api/turkey', () => {
 
   test('POST 400 for not sending in a required SPECIES property', () => {
     const mockTurkeyToPost = {
-      content: faker.lorem.words(50),
+      species: faker.lorem.words(3),
+      location: faker.lorem.words(20),
     };
     return superagent.post(apiUrl)
       .send(mockTurkeyToPost)
@@ -61,7 +59,7 @@ describe('POST requests to /api/turkey', () => {
   });
 
   test('POST 409 for duplicate key', () => {
-    return createTurkeyMockPromise()
+    return createTurkeyMock()
       .then((newTurkey) => {
         return superagent.post(apiUrl)
           .send({ title: newTurkey.title })
@@ -81,16 +79,15 @@ describe('POST requests to /api/turkey', () => {
 describe('GET requests to /api/turkey', () => {
   test('200 GET for succesful fetching of a turkey', () => {
     let mockTurkeyForGet;
-    return createTurkeyMockPromise()
+    return createTurkeyMock()
       .then((turkey) => {
         mockTurkeyForGet = turkey;
-        // I can return this to the next then block because superagent requests are also promisfied
         return superagent.get(`${apiUrl}/${mockTurkeyForGet._id}`);
       })
       .then((response) => {
         expect(response.status).toEqual(200);
-        expect(response.body.title).toEqual(mockTurkeyForGet.title);
-        expect(response.body.content).toEqual(mockTurkeyForGet.content);
+        expect(response.body.species).toEqual(mockTurkeyForGet.species);
+        expect(response.body.location).toEqual(mockTurkeyForGet.location);
       })
       .catch((err) => {
         throw err;
@@ -110,14 +107,14 @@ describe('GET requests to /api/turkey', () => {
 
 describe('PUT request to /api/turkey', () => {
   test('200 PUT for successful update of a resource', () => {
-    return createTurkeyMockPromise()
+    return createTurkeyMock()
       .then((newTurkey) => {
         return superagent.put(`${apiUrl}/${newTurkey._id}`)
-          .send({ title: 'updated title', content: 'updated content' })
+          .send({ title: 'updated species', content: 'updated location' })
           .then((response) => {
             expect(response.status).toEqual(200);
-            expect(response.body.title).toEqual('updated title');
-            expect(response.body.content).toEqual('updated content');
+            expect(response.body.species).toEqual('updated species');
+            expect(response.body.location).toEqual('updated location');
             expect(response.body._id.toString()).toEqual(newTurkey._id.toString());
           })
           .catch((err) => {
@@ -130,38 +127,38 @@ describe('PUT request to /api/turkey', () => {
   });
 });
 
-describe('DELTET requests to /api/turkey/', () => {
+describe('DELETE requests to /api/turkey/', () => {
   test('204 DELETE for succuessful deletion of a turkey', () => {
     let mockTurkeyForGet;
-    reutrnpCreateTurkeyMock()
-    .then ((turkey) => {
-      mockTurkeyForGet = turkey;
-      return superagent.delete(`${apiURL}/${mockTurkeyforGET._id}`);
-    })
-    then((response) => {
-      expect(response.status).toEqual(204);
-    })
-    .catch((err) => {
-      throw err;
-    });
+    return CreateTurkeyMock()
+      .then((turkey) => {
+        mockTurkeyForGet = turkey;
+        return superagent.delete(`${apiUrl}/${mockTurkeyForGet._id}`);
+      })
+      .then((response) => {
+        expect(response.status).toEqual(204);
+      })
+      .catch((err) => {
+        throw err;
+      });
   });
 
   test('400 DELETE: Missing turkey id', () => {
     return superagent.delete(`${apiUrl}`)
-    .then((response) => {
-      throw response;
-    })
-    .catchcatch((err) => {
-      expect(err.status).toEqual(400);
-    });
+      .then((response) => {
+        throw response;
+      })
+      .catchcatch((err) => {
+        expect(err.status).toEqual(400);
+      });
   });
   test('404 DELETE: No turkey with this id', () => {
     return superagent.delete(`${apiUrl}/Id doesnt work`)
-    .then((response) => {
-      throw response;
-    })
-    .catch((err) => {
-      expect(err.status).toEqual(404);
-    });
+      .then((response) => {
+        throw response;
+      })
+      .catch((err) => {
+        expect(err.status).toEqual(404);
+      });
   });
 });
